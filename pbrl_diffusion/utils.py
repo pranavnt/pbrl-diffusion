@@ -52,16 +52,16 @@ class ReplayBuffer:
         self.buffer = []
         self.position = 0
 
-    def push(self, state, action, next_state, reward, done, annotation=None):
+    def push(self, state, action, next_state, reward, done, additional_info=None):
         if len(self.buffer) < self.capacity:
             self.buffer.append(None)
-        self.buffer[self.position] = (state, action, next_state, reward, done, annotation)
+        self.buffer[self.position] = (state, action, next_state, reward, done, additional_info)
         self.position = (self.position + 1) % self.capacity
 
     def sample(self, batch_size):
         batch = random.sample(self.buffer, batch_size)
-        states, actions, next_states, rewards, dones, annotations = zip(*batch)
-        return states, actions, next_states, rewards, dones, annotations
+        states, actions, next_states, rewards, dones, additional_info = zip(*batch)
+        return states, actions, next_states, rewards, dones, additional_info
 
     def __len__(self):
         return len(self.buffer)
