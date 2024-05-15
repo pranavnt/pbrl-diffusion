@@ -158,11 +158,14 @@ class SACAgent:
         next_action = dist.rsample()
         log_prob = dist.log_prob(next_action).sum(-1, keepdim=True)
         target_Q1, target_Q2 = self.critic_target(next_obs, next_action)
+
         target_V = torch.min(target_Q1, target_Q2) - self.alpha.detach() * log_prob
-        target_Q = reward + (not_done * self.discount * target_V)
+
+        target_Q = reward.view(-1, 1) + (not_done.view(-1, 1) * self.discount * target_V.view(-1, 1))
         target_Q = target_Q.detach()
 
         current_Q1, current_Q2 = self.critic(obs, action)
+
         critic_loss = F.mse_loss(current_Q1, target_Q) + F.mse_loss(current_Q2, target_Q)
 
         self.critic_optimizer.zero_grad()
@@ -188,7 +191,7 @@ class SACAgent:
             self.log_alpha_optimizer.step()
 
     def update(self, replay_buffer: ReplayBuffer, step):
-        obs, action, reward, next_obs, not_done = replay_buffer.sample(self.batch_size)
+        obs, action, next_obs, reward, not_done, additional_info = replay_buffer.sample(self.batch_size)
 
         self.update_critic(obs, action, reward, next_obs, not_done)
 

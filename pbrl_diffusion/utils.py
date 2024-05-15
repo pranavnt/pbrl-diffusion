@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import numpy as np
 
 import random
 
@@ -59,9 +60,17 @@ class ReplayBuffer:
         self.position = (self.position + 1) % self.capacity
 
     def sample(self, batch_size):
-        batch = random.sample(self.buffer, batch_size)
+        if batch_size > len(self.buffer):
+            batch = random.sample(self.buffer, len(self.buffer))
+        else:
+            batch = random.sample(self.buffer, batch_size)
         states, actions, next_states, rewards, dones, additional_info = zip(*batch)
-        return states, actions, next_states, rewards, dones, additional_info
+        return (torch.tensor(np.array(states, dtype=np.float32), dtype=torch.float),
+                torch.tensor(np.array(actions, dtype=np.float32), dtype=torch.float),
+                torch.tensor(np.array(next_states, dtype=np.float32), dtype=torch.float),
+                torch.tensor(np.array(rewards, dtype=np.float32), dtype=torch.float),
+                torch.tensor(np.array(dones, dtype=np.float32), dtype=torch.float),
+                additional_info)
 
     def __len__(self):
         return len(self.buffer)
