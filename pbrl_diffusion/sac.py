@@ -103,7 +103,7 @@ class SquashedNormal(torch.distributions.transformed_distribution.TransformedDis
 class SACAgent:
     def __init__(self, obs_dim, action_dim, action_range, device,
                  hidden_dim=256, hidden_depth=2, log_std_bounds=[-20, 2],
-                 discount=0.99, init_temperature=0.01, alpha_lr=1e-3,
+                 discount=0.99, init_temperature=0.10, alpha_lr=1e-3,
                  alpha_betas=[0.9, 0.999], actor_lr=1e-3, actor_betas=[0.9, 0.999],
                  actor_update_frequency=1, critic_lr=1e-3, critic_betas=[0.9, 0.999],
                  critic_tau=0.005, critic_target_update_frequency=2,
